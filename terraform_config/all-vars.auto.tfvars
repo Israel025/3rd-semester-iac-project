@@ -62,6 +62,14 @@ inst-sg_ingress_rules = {
     protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  "ingrs_rule5" = {
+    description = "Open K8s node ports ranges"
+    from_port   = 30000
+    to_port     = 32767
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 inst-sg_egress_rules = {
