@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sharkapp
+  name: sharkapp
+  namespace: sharkapp
+spec:
+  # type: NodePort
+  ports:
+    - name: sharkapp-svc-port
+      port: 8001
+      targetPort: 8080
+  selector:
+    io.kompose.service: sharkapp
+status:
+  loadBalancer: {}

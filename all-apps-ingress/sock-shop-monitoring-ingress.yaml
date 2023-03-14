@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+  name: sock-shop-monitoring-ingress
+  namespace: monitoring
+spec:
+  tls:
+  - hosts:
+    - sockshop.megaitservices.com.ng
+    secretName: sock-shop-monitoring-tls
+  rules:
+  - host: sockshop.megaitservices.com.ng
+    http:
+      paths:
+      - path: /prometheus
+        pathType: Prefix
+        backend:
+          service: 
+            name: prometheus
+            port: 
+              number: 9090
+      - path: /grafana
+        pathType: Prefix
+        backend:
+          service: 
+            name: grafana
+            port: 
+              number: 80

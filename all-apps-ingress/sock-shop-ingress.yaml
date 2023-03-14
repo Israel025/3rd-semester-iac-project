@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+  name: sock-shop-ingress
+  namespace: sock-shop
+spec:
+  tls:
+  - hosts:
+    - sockshop.megaitservices.com.ng
+    secretName: sock-shop-tls
+  rules:
+  - host: sockshop.megaitservices.com.ng
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: front-end
+            port: 
+              number: 80

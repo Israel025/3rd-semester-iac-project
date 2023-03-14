@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sharkapp-cert
+  namespace: sharkapp
+spec:
+  dnsNames:
+    - megaitservices.com.ng
+  secretName: sharkapp-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer

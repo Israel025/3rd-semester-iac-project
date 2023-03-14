@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+  name: sharkapp-ingress
+  namespace: sharkapp
+spec:
+  tls:
+  - hosts:
+    - sharkapp.megaitservices.com.ng
+    secretName: sharkapp-tls
+  rules:
+  - host: sharkapp.megaitservices.com.ng
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: sharkapp
+            port: 
+              number: 8001

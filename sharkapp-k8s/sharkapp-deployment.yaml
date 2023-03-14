@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sharkapp
+  name: sharkapp
+  namespace: sharkapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: sharkapp
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/sharkapp-k8s-sharkapp-network: "true"
+        io.kompose.service: sharkapp
+    spec:
+      containers:
+        - env:
+            - name: MONGO_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: MONGO_DB
+                  name: env
+            - name: MONGO_HOSTNAME
+              value: sharkapp-db
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sharkappdb-secret
+                  key: MONGO_PASSWORD
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: MONGO_PORT
+                  name: env
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: sharkappdb-secret
+                  key: MONGO_USERNAME
+          image: izzyadmin/shark-appk8
+          name: sharkapp
+          ports:
+            - containerPort: 8080
+          resources: {}
+      initContainers:
+      - name: init-db
+        image: busybox
+        command: ['sh', '-c', 'until nc -z sharkapp-db:27017; do echo waiting for sharkapp-db; sleep 2; done;']
+      restartPolicy: Always
+status: {}
