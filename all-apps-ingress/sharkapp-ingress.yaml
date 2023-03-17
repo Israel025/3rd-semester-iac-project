@@ -11,13 +11,13 @@ metadata:
 spec:
   tls:
   - hosts:
-    - sharkapp.megaitservices.com.ng
+    - megaitservices.com.ng
     secretName: sharkapp-tls
   rules:
-  - host: sharkapp.megaitservices.com.ng
+  - host: megaitservices.com.ng
     http:
       paths:
-      - path: /
+      - path: /sharkapp
         pathType: Prefix
         backend:
           service: 

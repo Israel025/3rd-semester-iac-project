@@ -11,20 +11,20 @@ metadata:
 spec:
   tls:
   - hosts:
-    - sockshop.megaitservices.com.ng
+    - megaitservices.com.ng
     secretName: sock-shop-monitoring-tls
   rules:
-  - host: sockshop.megaitservices.com.ng
+  - host: megaitservices.com.ng
     http:
       paths:
-      - path: /prometheus
+      - path: /sock-prometheus
         pathType: Prefix
         backend:
           service: 
             name: prometheus
             port: 
               number: 9090
-      - path: /grafana
+      - path: /sock-grafana
         pathType: Prefix
         backend:
           service: 

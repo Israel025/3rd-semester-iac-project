@@ -110,8 +110,8 @@ nacl1-tags = {
 
 web_servers_values = {
   "instance1_values" = {
-    ami        = "ami-00874d747dde814fa"
-    inst_type  = "t2.micro"
+    ami        = "ami-09cd747c78a9add63"
+    inst_type  = "t2.medium"
     av_zone    = ""
     key_name   = "exm_connect"
     sec_groups = []
