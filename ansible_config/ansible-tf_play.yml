@@ -7,10 +7,6 @@
     - ./vars/vars1.yml
 
   tasks:
-  - name: set timezone to Africa/lagos
-    timezone:
-      name: Africa/Lagos
-  
   - name: Update and upgrade apt packages
     ansible.builtin.apt:
       update_cache: yes
@@ -22,9 +18,6 @@
     ansible.builtin.apt:
       name: python3
       state: present
-
-  - name: Setting path for .local/bin
-    ansible.builtin.command: PATH="$HOME/.local/bin:$PATH"
   
   - name: Install pip3
     ansible.builtin.apt:
@@ -76,27 +69,32 @@
   - name: Installing conntrack
     ansible.builtin.command: sudo apt install conntrack -y
   
-  - name: Installing Docker-shim
+  - name: Cloning the cri-docker repo
+    ansible.builtin.command: git clone https://github.com/Mirantis/cri-dockerd.git
+  
+  - name: Installing GO and cri-docker
+    become: false
+    sudo: true
     ansible.builtin.command: "{{ item }}"
     with_items:
-      - git clone https://github.com/Mirantis/cri-dockerd.git
       - wget https://storage.googleapis.com/golang/getgo/installer_linux
       - chmod +x ./installer_linux
-      - sudo ./installer_linux
-      - source ~/.bash_profile
+      - ./installer_linux
+      - source ~/.bash_profile      
 
   - name: Change to the cri-dockered directory to run the remaining setup commands for docker-shim
+    become: false
+    sudo: true
     ansible.builtin.command: "{{ item }}"
     with_items:
       - mkdir bin
       - go build -o bin/cri-dockerd
-      - mkdir -p /usr/local/bin
-      - sudo install -o root -g root -m 0755 bin/cri-dockerd /usr/local/bin/cri-dockerd
-      - sudo cp -a packaging/systemd/* /etc/systemd/system
-      - sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
-      - sudo systemctl daemon-reload
-      - sudo systemctl enable cri-docker.service
-      - sudo systemctl enable --now cri-docker.socket    
+      - install -o root -g root -m 0755 bin/cri-dockerd /usr/bin/cri-dockerd
+      - cp -a packaging/systemd/* /etc/systemd/system
+      - sed -i -e 's,/usr/local/bin/cri-dockerd,/usr/bin/cri-dockerd' /etc/systemd/system/cri-docker.service
+      - systemctl daemon-reload
+      - systemctl enable cri-docker.service
+      - systemctl enable --now cri-docker.socket  
     args:
       chdir: cri-dockerd/
   
@@ -105,19 +103,16 @@
     with_items:
       - VERSION="v1.26.0"
       - wget https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-$VERSION-linux-amd64.tar.gz
-      - sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
+      - sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/bin
       - rm -f crictl-$VERSION-linux-amd64.tar.gz
-  
-  - name: Run the equivalent of "apt-get update" as a separate step
-    ansible.builtin.apt:
-      update_cache: yes
 
-  - name: Run the equivalent of "apt-get clean" as a separate step
-    apt:
-      clean: yes
+  # kubectl config set-cluster minikube --server=https://$(minikube ip):8443
 
-  - name: Start k8s cluster on the VM's Baremetal
-    ansible.builtin.command: minikube start --driver=none --apiserver-ips={{ server-pub-ip }} --apiserver-name={{ server-pub-ip }} --insecure-registry='192.168.0.0/16'
+  - name: Set default memory for Minikube cluster
+    ansible.builtin.command: minikube config set memory 3920
+
+  - name: Start k8s cluster (via Minikube)
+    ansible.builtin.command: minikube start --driver=docker
   
   - name: Enable ingress addon
     ansible.builtin.command: minikube addons enable ingress

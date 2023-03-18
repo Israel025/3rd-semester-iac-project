@@ -11,13 +11,13 @@ metadata:
 spec:
   tls:
   - hosts:
-    - megaitservices.com.ng
+    - sockshop.megaitservices.com.ng
     secretName: sock-shop-tls
   rules:
-  - host: megaitservices.com.ng
+  - host: sockshop.megaitservices.com.ng
     http:
       paths:
-      - path: /sockshop
+      - path: /
         pathType: Prefix
         backend:
           service: 

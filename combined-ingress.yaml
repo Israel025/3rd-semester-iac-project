@@ -6,28 +6,45 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # nginx.ingress.kubernetes.io/rewrite-target: /
-  name: sock-shop-monitoring-ingress
-  namespace: monitoring
+  name: ingress-4-all
 spec:
   tls:
   - hosts:
-    - sockshop.megaitservices.com.ng
-    secretName: sock-shop-monitoring-tls
+    - megaitservices.com.ng
+    secretName: sharkapp-tls
   rules:
-  - host: sockshop.megaitservices.com.ng
+  - host: megaitservices.com.ng
     http:
       paths:
-      - path: /prometheus
+      - path: /sharkapp
+        pathType: Prefix
+        backend:
+          service: 
+            name: sharkapp
+            port: 
+              number: 8001
+        namespace: sharkapp
+      - path: /sockshop
+        pathType: Prefix
+        backend:
+          service: 
+            name: front-end
+            port: 
+              number: 80
+        namespace: sock-shop
+      - path: /sock-prometheus
         pathType: Prefix
         backend:
           service: 
             name: prometheus
             port: 
               number: 9090
-      - path: /grafana
+        namespace: monitoring
+      - path: /sock-grafana
         pathType: Prefix
         backend:
           service: 
             name: grafana
             port: 
               number: 80
+        namespace: monitoring
