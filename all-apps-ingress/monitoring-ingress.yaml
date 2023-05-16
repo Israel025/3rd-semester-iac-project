@@ -3,18 +3,19 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    cert-manager.io/cluster-issuer: "wildcard-issuer"
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    # nginx.ingress.kubernetes.io/rewrite-target: /
-  name: sock-shop-monitoring-ingress
+    # nginx.ingress.kubernetes.io/rewrite-target: /$1
+  name: monitoring-ingress
   namespace: monitoring
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
-    - sockshop.megaitservices.com.ng
-    secretName: sock-shop-monitoring-tls
+    - "*.megaitservices.com.ng"
+    secretName: monitoring-cert-secret
   rules:
-  - host: sockshop.megaitservices.com.ng
+  - host: monitoring.megaitservices.com.ng
     http:
       paths:
       - path: /prometheus
@@ -30,4 +31,4 @@ spec:
           service: 
             name: grafana
             port: 
-              number: 80
+              number: 3000

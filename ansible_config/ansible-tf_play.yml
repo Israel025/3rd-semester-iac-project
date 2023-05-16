@@ -108,6 +108,20 @@
 
   # kubectl config set-cluster minikube --server=https://$(minikube ip):8443
 
+  # Setup Nginx Reverse proxy to the ingress controller
+  - name: Copy the nginx config file to the server
+    ansible.builtin.copy:
+      src: ../nginx/nginx.conf
+      dest: /etc/nginx/nginx.conf
+      owner: root
+      group: root
+      mode: 0644
+  
+  - name: Restart Nginx
+    ansible.builtin.service:
+      name: nginx
+      state: restarted
+
   - name: Set default memory for Minikube cluster
     ansible.builtin.command: minikube config set memory 3920
 
@@ -119,9 +133,18 @@
   
   - name: Apply/install the certificate manager in the cluster
     ansible.builtin.command: kubectl apply --validate=false -f ../cert-manager/
+  
+  - name: Create/apply dns provider secret for the dns challenge
+    ansible.builtin.command: kubectl apply --validate=false -f ../cert-issuer/cloudflare-secret.yaml
+  
+  - name: Create a ClusterIssuer that issue certs in any namespace
+    ansible.builtin.command: kubectl apply -f ../cert-issuer/clusterIssuer-wildcard.yaml
 
   - name: Creating namespaces for the applications
     ansible.builtin.command: kubectl apply -f ../k8s-namespaces/
+
+  - name: Creating SSL Certificates for all required namespaces
+    ansible.builtin.command: kubectl apply -f ../certs/
   
   - name: Deploying the Sharkapp and it's services
     ansible.builtin.command: kubectl apply -f ../sharkapp-k8s/
@@ -129,11 +152,8 @@
   - name: Deploying the Sock-shop app and it's services
     ansible.builtin.command: kubectl apply -f ../sock-shop_app/deploy/kubernetes/manifests
 
-  - name: Deploying Prometheus and Grafana for the Sock-shop app and it's services
+  - name: Deploying Prometheus and Grafana
     ansible.builtin.command: kubectl create -f ../sock-shop_app/deploy/kubernetes/manifests-monitoring/ 
-  
-  - name: Create Let's Encrypt Issuer for our cluster; create a ClusterIssuer that allows us to issue certs in any namespace
-    ansible.builtin.command: kubectl apply -f ../cert-issuer-nginx-ingress.yaml
 
   - name: Create the ingress resources for all deployments
     ansible.builtin.command: kubectl apply -f ../all-apps-ingress/

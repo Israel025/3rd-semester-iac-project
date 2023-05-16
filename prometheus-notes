@@ -1,0 +1,18 @@
+minikube start
+minikube status
+kubectl get ns
+
+====Install Helm ==========
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+sudo chmod 700 get_helm.sh
+sudo ./get_helm.sh 
+
+====created the monitoring namespace=======
+kubectl create ns monitoring
+
+========adding a helm repo=============
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install kube-prometheus prometheus-community/kube-prometheus-stack --version 45.23.0 ns monitoring  (can omit the --version flag)
+
+

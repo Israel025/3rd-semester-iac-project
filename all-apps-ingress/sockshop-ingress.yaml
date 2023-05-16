@@ -3,16 +3,16 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    cert-manager.io/cluster-issuer: "wildcard-issuer"
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    # nginx.ingress.kubernetes.io/rewrite-target: /
-  name: sock-shop-ingress
+    # nginx.ingress.kubernetes.io/rewrite-target: /$1
+  name: sockshop-ingress
   namespace: sock-shop
 spec:
   tls:
   - hosts:
-    - sockshop.megaitservices.com.ng
-    secretName: sock-shop-tls
+    - "*.megaitservices.com.ng"
+    secretName: sockshop-cert-secret
   rules:
   - host: sockshop.megaitservices.com.ng
     http:

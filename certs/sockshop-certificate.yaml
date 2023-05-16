@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sockshop-cert
+  namespace: sock-shop
+spec:
+  dnsNames:
+    - "megaitservices.com.ng"
+    - "*.megaitservices.com.ng"
+  secretName: sockshop-cert-secret
+  # commonName: "*.megaitservices.com.ng"
+  issuerRef:
+    name: wildcard-issuer
+    kind: ClusterIssuer

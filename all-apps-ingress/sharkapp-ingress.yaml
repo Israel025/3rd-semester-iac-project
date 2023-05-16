@@ -3,17 +3,16 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    cert-manager.io/cluster-issuer: "wildcard-issuer"
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # nginx.ingress.kubernetes.io/rewrite-target: /$1
   name: sharkapp-ingress
   namespace: sharkapp
 spec:
-  ingressClassName: nginx
   tls:
   - hosts:
-    - sharkapp.megaitservices.com.ng
-    secretName: sharkapp-tls
+    - "*.megaitservices.com.ng"
+    secretName: sharkapp-cert-secret
   rules:
   - host: sharkapp.megaitservices.com.ng
     http:
@@ -22,6 +21,6 @@ spec:
         pathType: Prefix
         backend:
           service: 
-            name: sharkapp
+            name: sharkapp-service
             port: 
               number: 8001

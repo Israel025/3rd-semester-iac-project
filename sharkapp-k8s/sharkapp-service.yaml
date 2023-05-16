@@ -6,8 +6,8 @@ metadata:
     kompose.version: 1.28.0 (c4137012e)
   creationTimestamp: null
   labels:
-    io.kompose.service: sharkapp
-  name: sharkapp
+    io.kompose.service: sharkapp-service
+  name: sharkapp-service
   namespace: sharkapp
 spec:
   # type: NodePort
@@ -16,6 +16,6 @@ spec:
       port: 8001
       targetPort: 8080
   selector:
-    io.kompose.service: sharkapp
+    io.kompose.service: sharkapp-deployment
 status:
   loadBalancer: {}
